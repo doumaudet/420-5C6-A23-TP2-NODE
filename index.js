@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: ["http://localhost:3000"],
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "DELETE"],
     credentials: true,
   })
 );
@@ -35,10 +35,11 @@ app.use(
 );
 
 const db = mysql.createConnection({
-  user: "root",
-  host: "localhost",
-  password: "root",
-  database: "session",
+  database: 'session',
+  host: "mysql-29cea68d-kamy-de31.aivencloud.com",
+  user: "user-formatif",
+  password: "AVNS_9PkaTowuWO-G74OvGu7",
+  port:13194
 });
 
 app.post("/register", (req, res) => {
@@ -56,7 +57,9 @@ app.post("/register", (req, res) => {
       (err, result) => {
         console.log(err);
       }
+  
     );
+    res.status(200).send();
   });
 });
 
@@ -96,6 +99,15 @@ app.post("/login", (req, res) => {
     }
   );
 });
+
+//deconnexion
+
+app.delete("/deconnexion", (req, res) => {
+  res.clearCookie('userId');
+  req.session.destroy();
+  res.status(200).send();
+});
+
 
 app.listen(3001, () => {
   console.log("running server");
