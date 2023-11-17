@@ -13,13 +13,21 @@ const saltRounds = 10;
 const app = express();
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "DELETE"],
-    credentials: true,
-  })
-);
+
+const whitelist = ["http://localhost:3000"]
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error("Not allowed by CORS"))
+    }
+  },
+  credentials: true,
+}
+
+app.use(cors(corsOptions))
+
 app.use(cookieParser());
 
 app.use(
@@ -30,7 +38,7 @@ app.use(
     saveUninitialized: false,   //a vous de trouver l'utilité
     cookie: {                   //
       expires: 60 * 60 * 24,    // 24 heures
-    },                          
+    },
   })
 );
 
@@ -39,7 +47,7 @@ const db = mysql.createConnection({
   host: "mysql-29cea68d-kamy-de31.aivencloud.com",
   user: "user-formatif",
   password: "AVNS_9PkaTowuWO-G74OvGu7",
-  port:13194
+  port: 13194
 });
 
 app.post("/register", (req, res) => {
@@ -57,7 +65,7 @@ app.post("/register", (req, res) => {
       (err, result) => {
         console.log(err);
       }
-  
+
     );
     res.status(200).send();
   });
